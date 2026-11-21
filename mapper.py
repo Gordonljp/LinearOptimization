@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 ## The second function displays the map with the routes of the electric vehicles and the customers served by drones
 def mapper_inni(data:str,
                 save_fig: bool = False,
-                output_file: str = "instance_map.png"
+                output_file: str = "data/output/images/bare_map.png"
                 )-> None:
     
         # Initialize data containers
