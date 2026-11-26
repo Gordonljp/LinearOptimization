@@ -180,8 +180,11 @@ class Model:
         #----------------------------------------------------
         # Placeholder
         #----------------------------------------------------
-        rv = self.model.addMVar((len(V), len(Ns)), vtype=GRB.CONTINUOUS, name="rv")
-        E = {}
+        f = None
+        if f is not None:
+            fv = self.model.addMVar((len(V), len(Ns)), vtype=GRB.CONTINUOUS, name="fv")
+        e = {(i, j): self.ea[i, j] + self.eb[i, j] * self.l_nom for i, j in A}
+        E = {(v, i, j): e[i, j] * xv[v, i, j] for v in V for i, j in A}
 
         # Create objective functions
         # Objective (10): minimize total energy consumption
@@ -216,5 +219,84 @@ class Model:
             for j in Nc + Ns:
                 self.model.addConstr(gp.quicksum(xv[v, i, j] for i in in_arcs[j])
                                      == gp.quicksum(xv[v, j, k] for k in out_arcs[j]), name=f"c15_{v}_{j}")
+
+        # Constraint (16): each drone can only serve one customer at a time
+        for d in D:
+            self.model.addConstr(gp.quicksum(yd[d, i] for i in Nd) <= 1, name=f"c16_{d}")
+
+        # Constraint (17): each customer is served by either an EV or a drone
+        for i in Nc:
+            self.model.addConstr(gp.quicksum(xv[v, j, i] for v in V for j in in_arcs[i])
+                                 + gp.quicksum(yd[d, i] for d in D) == 1, name=f"c17_{i}")
+            
+        # Constraint (18): eliminate subtours for EVs using the Miller-Tucker-Zemlin (MTZ) formulation
+        for v in V:
+            for i in Nc:
+                for j in Nc:
+                    if i != j:
+                        self.model.addConstr(uv[v, i] - uv[v, j] + 1 <= self.n * (1 - xv[v, i, j]), name=f"c18_{v}_{i}_{j}")
+
+        # Constraint (19): drone completion time based on round trip time to the customer and back to the depot
+        for d in D:
+            for i in Nd:
+                self.model.addConstr(td[d].item() >= 2 * self.dE0[i] / dr.speed_kmh
+                                     - self.M_T * (1 - yd[d, i]), name=f"c19_{d}_{i}")
+                
+        # Constraints (20)-(21): EV time propagation, including recharging time at stations
+        for v in V:
+            for i, j in A:
+                travel_time = self.dM[i, j] / ev.speed_kmh
+                if i in Ns:
+                    self.model.addConstr(t[v, j] >= t[v, i] + travel_time + rv[v, i] / ev.recharge_kw
+                                         - self.M_T * (1 - xv[v, i, j]), name=f"c21_{v}_{i}_{j}")
+                else:
+                    self.model.addConstr(t[v, j] >= t[v, i] + travel_time
+                                         - self.M_T * (1 - xv[v, i, j]), name=f"c20_{v}_{i}_{j}")
+
+        # Constraints (22)-(23): only drone-eligible customers may be assigned to a drone
+        # The eligible set is calculated in _prepare()
+        for d in D:
+            for i in Nd:
+                if i not in self.C_elig:
+                    self.model.addConstr(yd[d, i] == 0, name=f"c23_{d}_{i}")
+
+        # Constraint (24): EV payload capacity
+        for v in V:
+            self.model.addConstr(gp.quicksum(self.q[j] * xv[v, i, j] for j in Nc for i in in_arcs[j])
+                                 <= L, name=f"c24_{v}")
+
+        # Constraint (25): each EV departs from the depot with a fully charged battery
+        for v in V:
+            self.model.addConstr(b[v, 0] == Bmax, name=f"c25_{v}")
+
+        # Constraints (26)-(27): EV battery update, including energy gained at stations
+        for v in V:
+            for i, j in A:
+                energy = E[v, i, j] if f is not None else e[i, j]
+                battery_balance = b[v, j] - b[v, i] + energy
+                constraint = "c26"
+                if i in Ns:
+                    battery_balance -= rv[v, i]
+                    constraint = "c27"
+
+                self.model.addConstr(battery_balance <= self.M_B * (1 - xv[v, i, j]),
+                                     name=f"{constraint}_upper_{v}_{i}_{j}")
+                self.model.addConstr(battery_balance >= -self.M_B * (1 - xv[v, i, j]),
+                                     name=f"{constraint}_lower_{v}_{i}_{j}")
+
+        # Constraint (28): EV partial recharge without exceeding battery capacity
+        for v in V:
+            for i in Ns:
+                self.model.addConstr(rv[v, i] <= Bmax - b[v, i], name=f"c28_{v}_{i}")
+        
+
+        # Store the decision variables in a dictionary for easy access
+        self.vars = dict(z=z, x=x, r=r, u=u, y=y, tv=tv, td=td, B=B, T=T)
+        self.obj = {"f1": f1, "f2": f2, "f3": f3}
+        self.node_index, self.customer_index, self.station_index = ni, ci, si
+
+        #--------------------------------------------------------
+        # todo: add the objective function to the model and set the weights for the multi-objective optimization
+        #--------------------------------------------------------
 
         pass
