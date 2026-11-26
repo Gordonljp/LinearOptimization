@@ -1,5 +1,3 @@
-gurobipy
-math
-fileinput
-pandas
-matplotlib
+pulp>=2.8,<3     # PuLP 2.x API (bundles the CBC solver); PuLP 4 changed the API
+highspy>=1.7     # HiGHS solver (default backend)
+# optional: lp_solve 5.5 command-line binary on PATH for solver="lpsolve"

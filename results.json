@@ -1,0 +1,619 @@
+{
+  "instance": "C6_0.50_R2",
+  "ideal": {
+    "f1": 17.368494221921253,
+    "f2": 2204.6488900623212,
+    "f3": 0.42072595372531707
+  },
+  "nadir": {
+    "f1": 21.57963118430429,
+    "f2": 3270.6926884307086,
+    "f3": 1.145737191717229
+  },
+  "payoff": {
+    "f1": {
+      "f1": 17.368494221921253,
+      "f2": 2666.2639972480006,
+      "f3": 0.8094281294090798
+    },
+    "f2": {
+      "f1": 21.57963118430429,
+      "f2": 2204.6488900623212,
+      "f3": 1.145737191717229
+    },
+    "f3": {
+      "f1": 20.519428877251723,
+      "f2": 3270.6926884307086,
+      "f3": 0.42072595372531707
+    }
+  },
+  "weighted": {
+    "status": "Optimal",
+    "time_s": 2.27,
+    "objectives": {
+      "f1": 17.406667909894892,
+      "f2": 2666.2639972480006,
+      "f3": 0.5269287121361454
+    },
+    "solution": {
+      "ev_routes": [
+        {
+          "vehicle": 0,
+          "route": [
+            0,
+            5,
+            9
+          ],
+          "recharge": {},
+          "recharge_pct": {},
+          "load_kg": 60.9,
+          "stops": [
+            {
+              "node": 5,
+              "arrival_h": 0.2069,
+              "battery_kwh": 56.4
+            },
+            {
+              "node": 9,
+              "arrival_h": 0.4137,
+              "battery_kwh": 53.448
+            }
+          ]
+        },
+        {
+          "vehicle": 1,
+          "route": [
+            0,
+            6,
+            2,
+            4,
+            9
+          ],
+          "recharge": {},
+          "recharge_pct": {},
+          "load_kg": 971.8,
+          "stops": [
+            {
+              "node": 6,
+              "arrival_h": 0.1458,
+              "battery_kwh": 57.696
+            },
+            {
+              "node": 2,
+              "arrival_h": 0.2517,
+              "battery_kwh": 56.083
+            },
+            {
+              "node": 4,
+              "arrival_h": 0.4613,
+              "battery_kwh": 51.596
+            },
+            {
+              "node": 9,
+              "arrival_h": 0.5269,
+              "battery_kwh": 50.576
+            }
+          ]
+        }
+      ],
+      "drone_trips": [
+        {
+          "drone": 0,
+          "customer": 3,
+          "return_h": 0.224,
+          "energy_kwh": 0.5827
+        },
+        {
+          "drone": 1,
+          "customer": 1,
+          "return_h": 0.302,
+          "energy_kwh": 0.8072
+        }
+      ]
+    },
+    "exact_payload_check": {
+      "f1": 17.36628352002239,
+      "f2": 2666.263997248,
+      "f3": 0.5269287121361454,
+      "feasible": true,
+      "violations": []
+    }
+  },
+  "pareto": [
+    {
+      "status": "Optimal",
+      "time_s": 1.42,
+      "objectives": {
+        "f1": 21.567570468644504,
+        "f2": 2204.648891062321,
+        "f3": 0.7052937746885614
+      },
+      "solution": {
+        "ev_routes": [
+          {
+            "vehicle": 0,
+            "route": [
+              0,
+              3,
+              6,
+              2,
+              4,
+              9
+            ],
+            "recharge": {},
+            "recharge_pct": {},
+            "load_kg": 977.7,
+            "stops": [
+              {
+                "node": 3,
+                "arrival_h": 0.1463,
+                "battery_kwh": 57.157
+              },
+              {
+                "node": 6,
+                "arrival_h": 0.3241,
+                "battery_kwh": 54.379
+              },
+              {
+                "node": 2,
+                "arrival_h": 0.43,
+                "battery_kwh": 52.766
+              },
+              {
+                "node": 4,
+                "arrival_h": 0.6397,
+                "battery_kwh": 48.279
+              },
+              {
+                "node": 9,
+                "arrival_h": 0.7053,
+                "battery_kwh": 47.259
+              }
+            ]
+          },
+          {
+            "vehicle": 1,
+            "route": [
+              0,
+              1,
+              5,
+              9
+            ],
+            "recharge": {},
+            "recharge_pct": {},
+            "load_kg": 67.4,
+            "stops": [
+              {
+                "node": 1,
+                "arrival_h": 0.2104,
+                "battery_kwh": 56.917
+              },
+              {
+                "node": 5,
+                "arrival_h": 0.3648,
+                "battery_kwh": 54.104
+              },
+              {
+                "node": 9,
+                "arrival_h": 0.5717,
+                "battery_kwh": 51.151
+              }
+            ]
+          }
+        ],
+        "drone_trips": []
+      },
+      "exact_payload_check": {
+        "f1": 21.58968385971299,
+        "f2": 2204.648890062327,
+        "f3": 0.7052937746885614,
+        "feasible": true,
+        "violations": []
+      },
+      "eps": {
+        "f2": 2204.6488900623212,
+        "f3": 0.7832315727212731
+      }
+    },
+    {
+      "status": "Optimal",
+      "time_s": 1.32,
+      "objectives": {
+        "f1": 21.40463721995444,
+        "f2": 2204.648891062322,
+        "f3": 1.1457371917172292
+      },
+      "solution": {
+        "ev_routes": [
+          {
+            "vehicle": 0,
+            "route": [
+              0,
+              3,
+              6,
+              2,
+              1,
+              5,
+              9
+            ],
+            "recharge": {},
+            "recharge_pct": {},
+            "load_kg": 96.6,
+            "stops": [
+              {
+                "node": 3,
+                "arrival_h": 0.1463,
+                "battery_kwh": 57.484
+              },
+              {
+                "node": 6,
+                "arrival_h": 0.3241,
+                "battery_kwh": 55.11
+              },
+              {
+                "node": 2,
+                "arrival_h": 0.43,
+                "battery_kwh": 53.732
+              },
+              {
+                "node": 1,
+                "arrival_h": 0.7844,
+                "battery_kwh": 47.855
+              },
+              {
+                "node": 5,
+                "arrival_h": 0.9389,
+                "battery_kwh": 45.042
+              },
+              {
+                "node": 9,
+                "arrival_h": 1.1457,
+                "battery_kwh": 42.089
+              }
+            ]
+          },
+          {
+            "vehicle": 1,
+            "route": [
+              0,
+              4,
+              9
+            ],
+            "recharge": {},
+            "recharge_pct": {},
+            "load_kg": 948.5,
+            "stops": [
+              {
+                "node": 4,
+                "arrival_h": 0.0656,
+                "battery_kwh": 58.781
+              },
+              {
+                "node": 9,
+                "arrival_h": 0.1312,
+                "battery_kwh": 57.761
+              }
+            ]
+          }
+        ],
+        "drone_trips": []
+      },
+      "exact_payload_check": {
+        "f1": 20.150198520688033,
+        "f2": 2204.648890062327,
+        "f3": 1.1457371917172292,
+        "feasible": true,
+        "violations": []
+      },
+      "eps": {
+        "f2": 2204.6488900623212,
+        "f3": 1.145737191717229
+      }
+    },
+    {
+      "status": "Optimal",
+      "time_s": 0.56,
+      "objectives": {
+        "f1": 17.406667909894892,
+        "f2": 2666.2639972480006,
+        "f3": 0.5269287121361454
+      },
+      "solution": {
+        "ev_routes": [
+          {
+            "vehicle": 0,
+            "route": [
+              0,
+              5,
+              9
+            ],
+            "recharge": {},
+            "recharge_pct": {},
+            "load_kg": 60.9,
+            "stops": [
+              {
+                "node": 5,
+                "arrival_h": 0.2069,
+                "battery_kwh": 56.4
+              },
+              {
+                "node": 9,
+                "arrival_h": 0.4137,
+                "battery_kwh": 53.448
+              }
+            ]
+          },
+          {
+            "vehicle": 1,
+            "route": [
+              0,
+              6,
+              2,
+              4,
+              9
+            ],
+            "recharge": {},
+            "recharge_pct": {},
+            "load_kg": 971.8,
+            "stops": [
+              {
+                "node": 6,
+                "arrival_h": 0.1458,
+                "battery_kwh": 57.696
+              },
+              {
+                "node": 2,
+                "arrival_h": 0.2517,
+                "battery_kwh": 56.083
+              },
+              {
+                "node": 4,
+                "arrival_h": 0.4613,
+                "battery_kwh": 51.596
+              },
+              {
+                "node": 9,
+                "arrival_h": 0.5269,
+                "battery_kwh": 50.576
+              }
+            ]
+          }
+        ],
+        "drone_trips": [
+          {
+            "drone": 0,
+            "customer": 1,
+            "return_h": 0.302,
+            "energy_kwh": 0.8072
+          },
+          {
+            "drone": 1,
+            "customer": 3,
+            "return_h": 0.224,
+            "energy_kwh": 0.5827
+          }
+        ]
+      },
+      "exact_payload_check": {
+        "f1": 17.36628352002239,
+        "f2": 2666.263997248,
+        "f3": 0.5269287121361454,
+        "feasible": true,
+        "violations": []
+      },
+      "eps": {
+        "f2": 2737.6707892465147,
+        "f3": 0.7832315727212731
+      }
+    },
+    {
+      "status": "Optimal",
+      "time_s": 0.78,
+      "objectives": {
+        "f1": 17.368494221921264,
+        "f2": 2666.2639972480006,
+        "f3": 0.8094281294090798
+      },
+      "solution": {
+        "ev_routes": [
+          {
+            "vehicle": 0,
+            "route": [
+              0,
+              6,
+              2,
+              5,
+              9
+            ],
+            "recharge": {},
+            "recharge_pct": {},
+            "load_kg": 84.2,
+            "stops": [
+              {
+                "node": 6,
+                "arrival_h": 0.1458,
+                "battery_kwh": 58.023
+              },
+              {
+                "node": 2,
+                "arrival_h": 0.2517,
+                "battery_kwh": 56.647
+              },
+              {
+                "node": 5,
+                "arrival_h": 0.6026,
+                "battery_kwh": 50.138
+              },
+              {
+                "node": 9,
+                "arrival_h": 0.8094,
+                "battery_kwh": 47.185
+              }
+            ]
+          },
+          {
+            "vehicle": 1,
+            "route": [
+              0,
+              4,
+              9
+            ],
+            "recharge": {},
+            "recharge_pct": {},
+            "load_kg": 948.5,
+            "stops": [
+              {
+                "node": 4,
+                "arrival_h": 0.0656,
+                "battery_kwh": 58.781
+              },
+              {
+                "node": 9,
+                "arrival_h": 0.1312,
+                "battery_kwh": 57.761
+              }
+            ]
+          }
+        ],
+        "drone_trips": [
+          {
+            "drone": 0,
+            "customer": 1,
+            "return_h": 0.302,
+            "energy_kwh": 0.8072
+          },
+          {
+            "drone": 1,
+            "customer": 3,
+            "return_h": 0.224,
+            "energy_kwh": 0.5827
+          }
+        ]
+      },
+      "exact_payload_check": {
+        "f1": 16.44453624556265,
+        "f2": 2666.2639972480006,
+        "f3": 0.8094281294090798,
+        "feasible": true,
+        "violations": []
+      },
+      "eps": {
+        "f2": 2737.6707892465147,
+        "f3": 1.145737191717229
+      }
+    },
+    {
+      "status": "Optimal",
+      "time_s": 3.16,
+      "objectives": {
+        "f1": 20.516158596557613,
+        "f2": 3270.6926884306886,
+        "f3": 0.42072595372531707
+      },
+      "solution": {
+        "ev_routes": [
+          {
+            "vehicle": 0,
+            "route": [
+              0,
+              4,
+              1,
+              9
+            ],
+            "recharge": {},
+            "recharge_pct": {},
+            "load_kg": 955.0,
+            "stops": [
+              {
+                "node": 4,
+                "arrival_h": 0.0656,
+                "battery_kwh": 58.78
+              },
+              {
+                "node": 1,
+                "arrival_h": 0.2104,
+                "battery_kwh": 56.705
+              },
+              {
+                "node": 9,
+                "arrival_h": 0.4207,
+                "battery_kwh": 53.394
+              }
+            ]
+          },
+          {
+            "vehicle": 1,
+            "route": [
+              0,
+              6,
+              9
+            ],
+            "recharge": {},
+            "recharge_pct": {},
+            "load_kg": 13.2,
+            "stops": [
+              {
+                "node": 6,
+                "arrival_h": 0.1458,
+                "battery_kwh": 58.05
+              },
+              {
+                "node": 9,
+                "arrival_h": 0.2915,
+                "battery_kwh": 55.388
+              }
+            ]
+          },
+          {
+            "vehicle": 2,
+            "route": [
+              0,
+              5,
+              9
+            ],
+            "recharge": {},
+            "recharge_pct": {},
+            "load_kg": 60.9,
+            "stops": [
+              {
+                "node": 5,
+                "arrival_h": 0.2069,
+                "battery_kwh": 56.4
+              },
+              {
+                "node": 9,
+                "arrival_h": 0.4137,
+                "battery_kwh": 53.448
+              }
+            ]
+          }
+        ],
+        "drone_trips": [
+          {
+            "drone": 0,
+            "customer": 3,
+            "return_h": 0.224,
+            "energy_kwh": 0.5827
+          },
+          {
+            "drone": 1,
+            "customer": 2,
+            "return_h": 0.311,
+            "energy_kwh": 0.9529
+          }
+        ]
+      },
+      "exact_payload_check": {
+        "f1": 19.306385850837803,
+        "f2": 3270.692688430688,
+        "f3": 0.42072595372531707,
+        "feasible": true,
+        "violations": []
+      },
+      "eps": {
+        "f2": 3270.6926884307086,
+        "f3": 0.42072595372531707
+      }
+    }
+  ]
+}
