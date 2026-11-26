@@ -1,4 +1,5 @@
 from mapper import mapper_inni
+from data.data_gen import data_gen
 import os
 
 def main():
@@ -8,7 +9,8 @@ def main():
 if __name__ == '__main__':
 
   main()
-  mapper_inni("data/Paper_data/C60_0.5_R14.txt", save_fig=True)
+  synth_data = data_gen(10,5, depot_location=(0, 0), wind=True, Temp=25.0, Humidity=60.0, Traffic=0.0, area_size=(100, 100))
+  mapper_inni(synth_data, save_fig=True)
 
   #print("Current directory:", os.getcwd())
   #print("File exists:", os.path.exists("data.txt"))
