@@ -1,7 +1,9 @@
 from fileinput import filename
 import math
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from data.EV_data import Truckdata, DroneData, EnvParams
 
 ## This file creates a simple mapping function designed to display the depot,customers and charging stations in the requested data
 ## The first sunction simply displays the bare map
@@ -34,6 +36,9 @@ def mapper_inni(data:str,
         x = float(values[2])
         y = float(values[3])
         demand = float(values[4])
+        wind_direction= float(values[9]) 
+        wind = float(values[7]) 
+        temp = float(values[5])
 
         node = (node_id, x, y, demand)
 
@@ -99,12 +104,35 @@ def mapper_inni(data:str,
             textcoords="offset points",
             fontsize=8
         )
+    dx_m_angle = [];
+    dy_m_angle = [];
+    distances = []
+    temp_diff = 0 #Set to zero because fuck all of these coefficients
+    for angle in range(0, 361): # For 360 degrees, calculate the maximum distance a drone can travel based on wind speed and direction
+        s_d = np.sqrt((DroneData().average_drone_speed/3.6)**2 + wind**2 - 2*(DroneData().average_drone_speed/3.6)*wind*math.cos(math.radians(angle-wind_direction)))
+        c1 = ((EnvParams().rho0*DroneData().eta*DroneData().drone_area*(s_d**2))/
+              ((2*DroneData().efficency*np.exp(-EnvParams().humidity_coef*(temp_diff))**2)))
+        + DroneData().additional_energy_coefficient*(DroneData().drone_curb_mass)
 
+        c2 = ((EnvParams().rho0*DroneData().eta*DroneData().drone_area*(s_d**2))/
+        ((2*DroneData().efficency*np.exp(-EnvParams().humidity_coef*(temp_diff))**2)))
+        + DroneData().additional_energy_coefficient*(DroneData().drone_curb_mass+DroneData().drone_load_capacity)
+        delta_h = 0 #no altitude change considered in this model
+        c3 =  DroneData().additional_energy_coefficient*(delta_h*(DroneData().drone_curb_mass +DroneData().drone_load_capacity) +(DroneData().drone_curb_mass)) #no altitude change considered in this model
+        d_m = DroneData().drone_battery_capacity / (c1 + c2) *10**3
+        distances.append(d_m)
+        dx_m_angle.append(d_m*math.cos(math.radians(angle)) + depot[0][1]) #Add depot x coordinate to the distance to get the x coordinate of the maximum distance a drone can travel based on wind speed and direction
+        dy_m_angle.append(d_m*math.sin(math.radians(angle)) + depot[0][2]) #Add depot y coordinate to the distance to get the y coordinate of the maximum distance a drone can travel based on wind speed and direction
+
+    ax.fill(dx_m_angle, dy_m_angle, color="dodgerblue", alpha=0.3)
+    ax.plot(dx_m_angle, dy_m_angle, color="blue")
+    #print(dx_m_angle,dy_m_angle, "Max distance a drone can travel based on wind speed and direction")
     # Formatting
+
     ax.set_xlabel("X Coordinate")
     ax.set_ylabel("Y Coordinate")
     ax.set_title("EV-Drone Routing Problem -" + data_name)
-
+    ax.text(0.02, 0.95, f"wind speed: {wind} m/s, wind direction: {wind_direction} degrees", transform=ax.transAxes, fontsize=10, verticalalignment='top')
     ax.legend()
     ax.grid(True, linestyle="--", alpha=0.5)
     ax.set_aspect("equal", adjustable="box")

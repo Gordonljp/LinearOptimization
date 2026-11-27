@@ -1,6 +1,6 @@
 from mapper import mapper_inni
 from data.data_gen import data_gen
-import os
+
 
 def main():
   print('hello world')

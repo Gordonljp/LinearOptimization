@@ -2,6 +2,7 @@ from gurobipy import GRB
 import gurobipy as gp
 import math
 import numpy as np
+from data.EV_data import Truckdata, DroneData, EnvParams
 
 # EV 0 - kWh, EV 1 - kg
 input = {"EV": [10, 2000], "DRONE": 1} # Input values for the model
@@ -14,10 +15,13 @@ def ev_energy_coeffs(pos_i, pos_j, ev, env, sc, tr):
     return 1.0, 1.0
 
 
-def drone_energy(pos_i, pos_j, load, dr, env, sc, elev_i, elev_j):
+def drone_energy(pos_i:float, pos_j:float, load, dr:DroneData, env:EnvParams, sc, elev_i, elev_j):
     # Calculate the energy consumption for drones based on the positions of nodes i and j, load, and other parameters
     # This is a placeholder function and should be implemented with the actual logic for calculating drone energy consumption
-    return 1.0
+    ## Todo Update environmental input parameters to include wind speed and direction, temperature, humidity, and traffic level
+
+    drone_energy = np.sqrt(pos_i**2 + pos_j**2)*((env.rho0*env.eta*4*dr.average_drone_speed**2)/(2*dr.drone_battery_capacity*np.exp((-env.humidity_coef*(15-15)))**2) + dr.additional_energy_coefficient*(load+dr.drone_curb_mass))
+    return drone_energy
 
 class Model:
     def __init__(self, input, objective, instance, env):
