@@ -10,7 +10,7 @@ def data_gen(num_customers: int,
             Humidity: float = 60.0,
             Traffic: float = 0.0,
             area_size: tuple = (100, 100),
-            output_file: str = "data/generated_data.txt") -> str:
+            output_file: str = "data/output/generated_data.txt") -> str:
     """
     Generates a data file with depot, customers, and charging stations.
 
