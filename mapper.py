@@ -8,7 +8,7 @@ from data.EV_data import Truckdata, DroneData, EnvParams
 ## This file creates a simple mapping function designed to display the depot,customers and charging stations in the requested data
 ## The first sunction simply displays the bare map
 ## The second function displays the map with the routes of the electric vehicles and the customers served by drones
-def mapper_inni(data:str,
+def mapper(data:str,
                 save_fig: bool = False,
                 output_file: str = "data/output/images/bare_map.png"
                 )-> None:
@@ -39,6 +39,7 @@ def mapper_inni(data:str,
         wind_direction= float(values[9]) 
         wind = float(values[7]) 
         temp = float(values[5])
+        humidity = float(values[6])
 
         node = (node_id, x, y, demand)
 
@@ -107,14 +108,15 @@ def mapper_inni(data:str,
     dx_m_angle = [];
     dy_m_angle = [];
     distances = []
+    rho_h = EnvParams().rho0 * (1 -EnvParams().humidity_coef * (humidity - EnvParams().humidity_ref))
     temp_diff = 0 #Set to zero because fuck all of these coefficients
     for angle in range(0, 361): # For 360 degrees, calculate the maximum distance a drone can travel based on wind speed and direction
         s_d = np.sqrt((DroneData().average_drone_speed/3.6)**2 + wind**2 - 2*(DroneData().average_drone_speed/3.6)*wind*math.cos(math.radians(angle-wind_direction)))
-        c1 = ((EnvParams().rho0*DroneData().eta*DroneData().drone_area*(s_d**2))/
+        c1 = ((rho_h*DroneData().eta*DroneData().drone_area*(s_d**2))/
               ((2*DroneData().efficency*np.exp(-EnvParams().humidity_coef*(temp_diff))**2)))
         + DroneData().additional_energy_coefficient*(DroneData().drone_curb_mass)
 
-        c2 = ((EnvParams().rho0*DroneData().eta*DroneData().drone_area*(s_d**2))/
+        c2 = ((rho_h*DroneData().eta*DroneData().drone_area*(s_d**2))/
         ((2*DroneData().efficency*np.exp(-EnvParams().humidity_coef*(temp_diff))**2)))
         + DroneData().additional_energy_coefficient*(DroneData().drone_curb_mass+DroneData().drone_load_capacity)
         delta_h = 0 #no altitude change considered in this model

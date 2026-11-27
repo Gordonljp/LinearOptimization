@@ -12,6 +12,7 @@ objective = {"f1": 0, "f2": 0, "f3": 0}
 def ev_energy_coeffs(pos_i, pos_j, ev, env, sc, tr):
     # Calculate the energy coefficients for electric vehicles based on the positions of nodes i and j
     # This is a placeholder function and should be implemented with the actual logic for calculating energy coefficients
+
     return 1.0, 1.0
 
 
@@ -19,8 +20,10 @@ def drone_energy(pos_i:float, pos_j:float, load, dr:DroneData, env:EnvParams, sc
     # Calculate the energy consumption for drones based on the positions of nodes i and j, load, and other parameters
     # This is a placeholder function and should be implemented with the actual logic for calculating drone energy consumption
     ## Todo Update environmental input parameters to include wind speed and direction, temperature, humidity, and traffic level
-
-    drone_energy = np.sqrt(pos_i**2 + pos_j**2)*((env.rho0*env.eta*4*dr.average_drone_speed**2)/(2*dr.drone_battery_capacity*np.exp((-env.humidity_coef*(15-15)))**2) + dr.additional_energy_coefficient*(load+dr.drone_curb_mass))
+    wind = sc.wind_speed # Placeholder for wind speed, should be replaced with actual value from sc
+    travel_angle = math.atan2(pos_j[1] - pos_i[1], pos_j[0] - pos_i[0]) # Angle of travel from i to j
+    s_d = dr.average_drone_speed**2 + wind**2 - 2*dr.average_drone_speed*wind*np.cos(np.radians(travel_angle-sc.wind_direction)) # Relative speed of drone to wind
+    drone_energy = np.sqrt(pos_i**2 + pos_j**2)*((env.rho0*dr.drone_area*dr.eta*(s_d**2))/(2*dr.drone_battery_capacity*np.exp((-env.humidity_coef*(0)))**2) + dr.additional_energy_coefficient*(load+dr.drone_curb_mass))
     return drone_energy
 
 class Model:
