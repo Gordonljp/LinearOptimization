@@ -1,0 +1,5 @@
+# Ignore the .env file and the data/output directory
+.env
+
+/data/output
+/.vscode
