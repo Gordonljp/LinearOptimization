@@ -10,21 +10,52 @@ input = {"EV": [10, 2000], "DRONE": 1} # Input values for the model
 objective = {"f1": 0, "f2": 0, "f3": 0}
 
 def ev_energy_coeffs(pos_i, pos_j, ev, env, sc, tr):
-    # Calculate the energy coefficients for electric vehicles based on the positions of nodes i and j
-    # This is a placeholder function and should be implemented with the actual logic for calculating energy coefficients
+    """
+    Energy coefficients of the EV on arc i -> j (Zhang et al., Eq. 1-6).
+    Returns a_ij [kWh] (empty vehicle) and b_ij [kWh/kg] (extra energy per kg payload),
+    so that e_ij = a_ij + b_ij * payload.
+    pos_i, pos_j : (x, y) in km;  tr : traffic indicator of the arc (0-1).
+    """
+    dx = (pos_j[0] - pos_i[0]) * 1000.0                  # horizontal segment [m]
+    dy = (pos_j[1] - pos_i[1]) * 1000.0                  # vertical segment [m]
+    d_M = abs(dx) + abs(dy)                              # Manhattan distance [m]
 
-    return 1.0, 1.0
+    # Relative air speed per segment (Eq. 3)
+    s = ev.speed_kmh / 3.6                               # km/h -> m/s
+    w = sc.wind_speed                                    # [m/s]
+    theta_w = math.radians(sc.wind_direction)            # degrees -> rad
+    theta_x = 0.0 if dx >= 0 else math.pi                # driving right / left
+    theta_y = math.pi / 2 if dy >= 0 else 3 * math.pi / 2  # driving up / down
+    s_rel2_x = s**2 + w**2 - 2 * s * w * math.cos(theta_x - theta_w)   # already squared
+    s_rel2_y = s**2 + w**2 - 2 * s * w * math.cos(theta_y - theta_w)
+
+    # Environment effects
+    rho = env.rho0 * (1 - env.humidity_coef * (sc.humidity - env.H0))           # Eq. 2
+    eta = ev.eta * math.exp(-ev.alpha * (sc.temperature - ev.T_opt) ** 2)       # Eq. 4
+    lam = 1 + tr                                                                # Eq. 5
+
+    # Forces times distance [J]
+    rolling_per_kg = ev.sigma * env.g * d_M                                     # Eq. 1, per kg
+    drag = 0.5 * rho * ev.xi * ev.area * (s_rel2_x * abs(dx) + s_rel2_y * abs(dy))  # Eq. 3
+
+    # Eq. 6, split into empty-vehicle part and payload part, converted J -> kWh
+    a_ij = lam / eta * (rolling_per_kg * ev.curb_mass_kg + drag) / 3.6e6
+    b_ij = lam / eta * rolling_per_kg / 3.6e6
+    return a_ij, b_ij
 
 
-def drone_energy(pos_i:float, pos_j:float, load, dr:DroneData, env:EnvParams, sc, elev_i, elev_j):
-    # Calculate the energy consumption for drones based on the positions of nodes i and j, load, and other parameters
-    # This is a placeholder function and should be implemented with the actual logic for calculating drone energy consumption
-    ## Todo Update environmental input parameters to include wind speed and direction, temperature, humidity, and traffic level
-    wind = sc.wind_speed # Placeholder for wind speed, should be replaced with actual value from sc
-    travel_angle = math.atan2(pos_j[1] - pos_i[1], pos_j[0] - pos_i[0]) # Angle of travel from i to j
-    s_d = dr.average_drone_speed**2 + wind**2 - 2*dr.average_drone_speed*wind*np.cos(np.radians(travel_angle-sc.wind_direction)) # Relative speed of drone to wind
-    drone_energy = np.sqrt(pos_i**2 + pos_j**2)*((env.rho0*dr.drone_area*dr.eta*(s_d**2))/(2*dr.drone_battery_capacity*np.exp((-env.humidity_coef*(0)))**2) + dr.additional_energy_coefficient*(load+dr.drone_curb_mass))
-    return drone_energy
+def drone_energy(pos_i, pos_j, load, dr, env, sc, elev_i, elev_j):
+    d_km = math.dist(pos_i, pos_j)                                   # Euclidean distance [km]
+    theta = math.atan2(pos_j[1] - pos_i[1], pos_j[0] - pos_i[0])     # travel angle [rad]
+    s = dr.average_drone_speed / 3.6                                 # km/h -> m/s
+    w = sc.wind_speed                                                # [m/s]
+    s_rel2 = s**2 + w**2 - 2*s*w*math.cos(theta - math.radians(sc.wind_direction))  # already squared
+    rho = env.rho0 * (1 - env.humidity_coef * (sc.humidity - env.H0))           # Eq. 2
+    eta = dr.eta * math.exp(-dr.alpha * (sc.temperature - dr.T_opt)**2)         # Eq. 8
+    drag_kwh  = 0.5 * rho * dr.xi * dr.drone_area * s_rel2 / eta * d_km * 1000 / 3.6e6
+    mass_kwh  = dr.additional_energy_coefficient * (dr.drone_curb_mass + load) * d_km
+    climb_kwh = dr.beta * (dr.drone_curb_mass + load) * max(0.0, elev_j - elev_i)
+    return drag_kwh + mass_kwh + climb_kwh
 
 class Model:
     def __init__(self, input, objective, instance, env):
