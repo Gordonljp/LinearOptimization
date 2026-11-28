@@ -40,6 +40,7 @@ class Model:
         self._build()
 
     def _prepare(self):
+        # Underscore methods are used to indicate that these methods are intended for internal use within the class
         I, ev, dr = self.inst, self.EV, self.DRONE
         cust, stat = I["customers"], I["stations"]
         dep = I["depot"]
@@ -185,7 +186,7 @@ class Model:
 
         # Energy consumption for EVs
         #----------------------------------------------------
-        # Placeholder
+        # Placeholder Energy consumption calculation for EVs, to be replaced with actual logic based on the model's requirements
         #----------------------------------------------------
         f = None
         if f is not None:
@@ -206,10 +207,12 @@ class Model:
                             for d in D for i in Nd))
 
         # Objective (12): minimize total completion time
-        #-----------------------------------------------------
-        # Todo add the completion time objective function
-        #-----------------------------------------------------
         f3 = T
+        for v in V:
+            self.model.addConstr(T >= tv[v, N0[1]], name=f"f3_{v}") # N0[1] is the return depot node, should use dummy if no return depot
+            self.model.addConstr(t[v, N0[0]] == 0, name=f"f3_start_{v}") # N0[0] is the start depot node
+        for d in D:
+            self.model.addConstr(T >= td[d].item(), name=f"f3_{d}")
 
         # Create constraints - Use addConstr for each constraint in the model
         # Each constraint line adds constraints named c13_0, c13_1... numbered according to the EV index and constraint number
@@ -302,8 +305,24 @@ class Model:
         self.obj = {"f1": f1, "f2": f2, "f3": f3}
         self.node_index, self.customer_index, self.station_index = ni, ci, si
 
-        #--------------------------------------------------------
-        # todo: add the objective function to the model and set the weights for the multi-objective optimization
-        #--------------------------------------------------------
+        # Set the weighted sum of the objectives as the model's objective function
+        weights = [self.objective.get(k, 0) for k in self.obj]
+        if not any(weights):
+            weights = [1] * len(self.obj)  # Default to equal weights if none are provided
+        self.model.setObjective(gp.quicksum(w * self.obj[k] for w, k in zip(weights, self.obj)), GRB.MINIMIZE)
+        self.model.update()  # Update the model to integrate the new objective function
 
-        pass
+    def solve(self, time_limit=None):
+        # Solve the optimization model using Gurobi
+        if time_limit is not None:
+            self.model.setParam('TimeLimit', time_limit)  # Set a time limit for the solver
+        self.model.optimize()  # Optimize the model
+
+        # Check if the optimization was successful
+        if self.model.status == GRB.OPTIMAL:
+            print("Optimal solution found.")
+            self.model.write("model_solution.sol")  # Save the solution to a file
+        elif self.model.status == GRB.TIME_LIMIT:
+            print("Time limit reached. Best solution found within the time limit.")
+        else:
+            print(f"Optimization ended with status {self.model.status}.")
